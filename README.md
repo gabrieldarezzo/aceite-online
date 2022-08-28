@@ -19,7 +19,7 @@ A brincadeira aqui usou alguns conceitos do C:
 ### Copilar e Executar (local) ?!  
 Execute o comando
 ```shell
-gcc -o binary.exe worker.c && binary.exe
+gcc -o binary worker.c && binary
 ```
 
 ### Copilar e Executar pra 'prod' ?!
@@ -85,6 +85,11 @@ consumer_id: int
 path_file: char[250]
 ```
 
+
+
+```
+x86_64-w64-mingw32-g++ -o run exercicios/menu_simple.c
+```
 
 Topicos para estudar:  
 - Malloc: https://www.programiz.com/c-programming/c-structures-pointers

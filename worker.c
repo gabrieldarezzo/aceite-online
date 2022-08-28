@@ -28,9 +28,13 @@ struct Worker {
 } workers[LENGHT_WORKER];
 
 void clearScreen() {
-    if (system("clear")) {
+    #ifdef __APPLE__
+        system("clear");
+    #elif linux
+        system("pwd");//TODO: Search after
+    #else // Windows
         system("cls");
-    }
+    #endif
 }
 
 /**
@@ -40,11 +44,14 @@ void clearScreen() {
 void saveWorkersInHardDisk() {
     struct stat st = {0};
     if (stat("storage", &st) == -1) {
-        #ifdef linux
-           mkdir("storage", 0700);
-        #else
+        #ifdef __APPLE__
+            mkdir("storage", 0700);
+        #elif linux
+            mkdir("storage", 0700);
+        #else // Windows
             mkdir("storage");
-        #endif   
+        #endif
+        
     }
 
     FILE *fpt;
@@ -262,16 +269,16 @@ struct Worker requestInfoWorker()
     // if ((strlen(workerTemp.name) > 0) && (workerTemp.name[strlen (workerTemp.name) - 1] == '\n')) {
     //     workerTemp.name[strlen (workerTemp.name) - 1] = '\0';
     // }
-    scanf("%s",&workerTemp.name);
+    scanf("%s",workerTemp.name);
     
     printf("Informe o %s do %s\n", "cpf", "Funcionário:");    
-    scanf("%s",&workerTemp.cpf);
+    scanf("%s",workerTemp.cpf);
 
     printf("Informe se o %s é %s\n", "Funcionário", "gerente (0 | 1) :");
     scanf("%i",&workerTemp.is_manager);
 
     printf("Informe o %s do %s\n", "sexo", "Funcionário ('M' | 'F'):");    
-    scanf("%s",&workerTemp.gender);
+    scanf("%s",workerTemp.gender);
 
     printf("Informe o %s do %s\n", "salário", "Funcionário:");    
     scanf("%f",&workerTemp.salary);
@@ -317,7 +324,7 @@ void showWorkerMenu() {
                 displayAllWorkers();                
                 printf("Informe o cpf do Funcionário para editar\n");
                 char cpfTemp[14];
-                scanf("%s", &cpfTemp);
+                scanf("%s", cpfTemp);
                 workerTemp = requestInfoWorker();
                 workerTemp = updateWorker(workers, cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
                 printf("O Funcionário %s (%s) foi atualizado com sucesso! \n", workerTemp.name, workerTemp.cpf);
@@ -327,8 +334,8 @@ void showWorkerMenu() {
             case 4:
                 clearScreen();
                 displayAllWorkers();                
-                printf("Informe o cpf do Funcionário para exluir\n", "cpf");
-                scanf("%s",&workerTemp.cpf);
+                printf("Informe o cpf do Funcionário para exluir\n");
+                scanf("%s",workerTemp.cpf);
                 workerTemp = deleteWorker(workerTemp.cpf);
                 printf("O CPF: %s (%s) foi excluido com sucesso! \n", workerTemp.cpf, workerTemp.name);
                 saveWorkersInHardDisk();
@@ -351,7 +358,7 @@ void showWorkerMenu() {
 int main(int argc, char *argv[]) {
 
     #ifdef linux
-            
+
     #else
         if(argv[1] && strcmp(argv[1], "1") == 0) {
             // call with argument, binary.exe 1
@@ -363,7 +370,7 @@ int main(int argc, char *argv[]) {
 
     
     clearScreen();
-    readWorkersFromHardDisk();
+    // readWorkersFromHardDisk();
     
     //// Examples of simulate inputs manual:    
     // addWorker("A. CLAUDIA", "222.333.666-01", 0, "F", 2540);
