@@ -10,10 +10,15 @@ Possibilitando o operador:
 A brincaideora aqui usou alguns conceitos do C: 
 - Functions 
 - Pointers and Refferences
-- Correção de acentuação no Windows (Locale is Sux)
+- Correção de acentuação no Windows (setLocale is Sux!)
 - Structs 
 - I/O Files Persistir em (.csv) 
 - Structs 
+
+
+https://docs.google.com/spreadsheets/d/1eMlOSFpCK09SJYl4bYadGosuIpcc6fSVmUAPV1VW3GI/edit?usp=sharing
+
+
 
 ### Copilar e Executar ?!  
 Execute o comando
@@ -21,8 +26,14 @@ Execute o comando
 gcc -o binary.exe worker.c && binary.exe
 ```
 
-![Terminal](docs/out_worker.png)    
 
+### Copilar pra valer ?!
+Execute o comando
+```shell
+gcc -o binary.exe worker.c && dist/aceite-online.exe
+```
+
+![Terminal](docs/out_worker.png)    
 
 
 ![Fluxograma](docs/fluxograma_fluxo.png)    
@@ -30,9 +41,14 @@ gcc -o binary.exe worker.c && binary.exe
 
 
 O restante está aqui:  
-https://app.diagrams.net/#G1qRgqKxPBZyYuL1YDv5Tw2RoON5Od_gRE
-
+https://app.diagrams.net/#G1qRgqKxPBZyYuL1YDv5Tw2RoON5Od_gRE   
 Ou uma versão estatica: `docs/fluxo_drawio.xml`  
+
+
+Planilha de dados (storage/workers.csv)
+https://docs.google.com/spreadsheets/d/1eMlOSFpCK09SJYl4bYadGosuIpcc6fSVmUAPV1VW3GI/edit?usp=sharing
+![Terminal](docs/workers_csv)    
+
 
 ## Dicas:
 In VSCode:    

@@ -11,6 +11,7 @@
 
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
+#define LENGHT_WORKER 50
 
 void clearScreen() {
     if (system("clear")) {
@@ -34,9 +35,9 @@ struct Worker {
     char gender[1];
     float salary;
     int is_deleted;
-};
+} workers[LENGHT_WORKER];
 
-void saveWorkersInHardDisk(struct Worker workers[], int lengthWorkers) {
+void saveWorkersInHardDisk(struct Worker workers[]) {
       struct stat st = {0};
     if (stat("storage", &st) == -1) {
         #ifdef linux
@@ -50,10 +51,10 @@ void saveWorkersInHardDisk(struct Worker workers[], int lengthWorkers) {
     fpt = fopen(PATH_FILE, "w+");
     
     // Need Header?
-    // fprintf(fpt,"ID, Name, Email, Phone Number\n");
-    for (int i = 0; i < lengthWorkers; i++) {
+    fprintf(fpt,"id,name,cpf,gender,is_manager,salary\n");
+    for (int i = 0; i < LENGHT_WORKER; i++) {
 
-        if(workers[i].is_deleted) {
+        if(workers[i].is_deleted || workers[i].id == 0) {
             continue; 
         }
 
@@ -83,14 +84,16 @@ void saveWorkersInHardDisk(struct Worker workers[], int lengthWorkers) {
  * @param workerSalary 
  * @return int 
  */
-int addWorker(struct Worker allWorkers[], int index, char workerName[250], char workerCpf[14], int workerIsManager, char workerGender[1], float workerSalary) {
-    allWorkers[index].id = index + 1;
-    strcpy(allWorkers[index].name, workerName);
-    strcpy(allWorkers[index].cpf, workerCpf);
-    allWorkers[index].is_manager = workerIsManager;
-    strcpy(allWorkers[index].gender, workerGender);
-    allWorkers[index].salary = workerSalary;
-    allWorkers[index].is_deleted = 0;
+int addWorker(struct Worker allWorkers[], int* countWorkers, char workerName[250], char workerCpf[14], int workerIsManager, char workerGender[1], float workerSalary) {
+    allWorkers[*countWorkers].id = *countWorkers + 1;
+    strcpy(allWorkers[*countWorkers].name, workerName);
+    strcpy(allWorkers[*countWorkers].cpf, workerCpf);
+    allWorkers[*countWorkers].is_manager = workerIsManager;
+    strcpy(allWorkers[*countWorkers].gender, workerGender);
+    allWorkers[*countWorkers].salary = workerSalary;
+    allWorkers[*countWorkers].is_deleted = 0;
+
+    *countWorkers = *countWorkers + 1;
     return 1;
 }
 
@@ -102,19 +105,19 @@ int addWorker(struct Worker allWorkers[], int index, char workerName[250], char 
  * @param workers 
  * @return int 
  */
-int readWorkersFromHardDisk(struct Worker workers[]) {
+void readWorkersFromHardDisk(struct Worker workers[], int* pCountWorkers) {
     FILE *file = fopen(PATH_FILE, "r");
     char buf[400];
     int id;
     char name[250];
-    char anyVar[1]; // If remove this, will break Name... C-things....
+    char anyVar[2]; // If remove this, will break Name... C-things....
     char cpf[14];
-    char anyVar2[1]; // If remove this, will break CPF... C-things....
+    char anyVar2[2]; // If remove this, will break CPF... C-things....
     int is_manager;
     char gender[1];
     float salary;
     const char fields[6] = ";";
-    int readWorker = 0;
+    
     while(fgets(buf, sizeof(buf), file))
     {
         const char separator[1] = ",";
@@ -145,22 +148,22 @@ int readWorkersFromHardDisk(struct Worker workers[]) {
         // printf("Gender: %s\n", gender );            
         // printf("Ismanager %i\n", is_manager);
         // printf("Salary: %f\n", salary);
-        readWorker = readWorker + addWorker(workers, readWorker, name, cpf, is_manager, gender, salary);
+        
+        addWorker(workers, pCountWorkers, name, cpf, is_manager, gender, salary);
     }
 
-    return readWorker;
+    return;
 }
 
 void displayWorker(struct Worker worker) {
-    if(worker.is_deleted) {
+    if(worker.is_deleted || worker.id == 0) {
         return; 
     }
     printf("|\t\t%d|\t%s\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, worker.name, worker.cpf, worker.is_manager, worker.salary);
 }
 
-
-int deleteWorker(struct Worker workers[], int lengthWorkers, char *cpfWorkerToDelete) {
-    for (int i = 0; i < lengthWorkers; i++) {
+int deleteWorker(struct Worker workers[], char *cpfWorkerToDelete) {
+    for (int i = 0; i < LENGHT_WORKER; i++) {
         if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
             workers[i].is_deleted = 1;            
         }        
@@ -169,8 +172,7 @@ int deleteWorker(struct Worker workers[], int lengthWorkers, char *cpfWorkerToDe
 }
 
 int updateWorker(
-    struct Worker allWorkers[],
-    int lengthWorkers, 
+    struct Worker allWorkers[],    
     char *cpfWorkerToUpdate,
     char workerName[250],
     char workerCpf[14],
@@ -178,7 +180,7 @@ int updateWorker(
     char workerGender[1],
     float workerSalary
 ) {
-    for (int i = 0; i < lengthWorkers; i++) {
+    for (int i = 0; i < LENGHT_WORKER; i++) {
         if(strcmp(allWorkers[i].cpf, cpfWorkerToUpdate) == 0) {
             // workers[i].is_deleted = 1;
             allWorkers[i].id = i + 1;
@@ -193,20 +195,17 @@ int updateWorker(
     }
 }
 
-
-
-
-void displayAllWorkers(struct Worker workers[], int lengthWorkers) {
-    printf("+----------------+----------------+-----+-------------------------------+---------------+\n");
+void displayAllWorkers(struct Worker workers[]) {
+    printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
     printf("|MATRICULA\t |FUNCIONÁRIO(A)\t|CPF\t\t |GERENTE\t|SALÁRIO\t|\n");
-    printf("+----------------+----------------+-----+-------------------------------+---------------+\n");
+    printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
     
     // TODO: Não Rolou kkkcrying :hehe
     // int lengthWorkers = sizeof(workers)/sizeof(workers[0]);      
-    for (int i = 0; i < lengthWorkers; i++) {
+    for (int i = 0; i < LENGHT_WORKER; i++) {
         displayWorker(workers[i]);
     }
-    printf("+---------------+-----------------------+-------------------------------+---------------+\n");
+    printf("+---------------+-----------------------+----------------+--------------+---------------+\n");
 }
 
 int main(void)
@@ -215,30 +214,33 @@ int main(void)
     clearScreen();
 
     int countWorkers = 0;
-    struct Worker workers[20]; // Definimos que pode ter até 20 trabalhadores
-    // countWorkers = readWorkersFromHardDisk(workers);
-    
-    // Massa de Dados. (Simulando Inputs manuais)
-    // TODO: Pesquisar como deixa dinamico o incremento do Array, Pointer?!    
-    countWorkers = countWorkers + addWorker(workers, countWorkers, "A. CLAUDIA", "222.333.666-01",0 ,"F", 2540);
-    countWorkers = countWorkers + addWorker(workers, countWorkers, "DAGOBERTO", "444.555.666-02",1 ,"M", 25000);
-    countWorkers = countWorkers + addWorker(workers, countWorkers, "RODOLFO- UFA", "777.444.666-03",0 ,"M", 850);
-    countWorkers = countWorkers + addWorker(workers, countWorkers, "QUE SUSTO", "666.444.666-04",0 ,"M", 890);
-    countWorkers = countWorkers + addWorker(workers, countWorkers, "SANDRINHA", "222.333.666-38",0 ,"F", 80000);
-    
-
-    displayAllWorkers(workers, countWorkers);
-    countWorkers = countWorkers + deleteWorker(workers, 4, "222.333.666-38"); // excluir a Sandrinha    
-    saveWorkersInHardDisk(workers, countWorkers);
+    int* pCountWorkers = &countWorkers;
 
 
+    readWorkersFromHardDisk(workers, pCountWorkers);
     
-    displayAllWorkers(workers, countWorkers);
-    updateWorker(workers, countWorkers, "222.333.666-01" ,"CLAUDINHA", "222.333.666-01",0 ,"F", 2540);
-    displayAllWorkers(workers, countWorkers);
+    // Massa de Dados. (Simulando Inputs manuais)    
+    // addWorker(workers, pCountWorkers, "A. CLAUDIA", "222.333.666-01", 0, "F", 2540);
+    // addWorker(workers, pCountWorkers, "DAGOBERTO", "444.555.666-02", 1, "M", 25000);
+    // addWorker(workers, pCountWorkers, "RODOLFO- UFA", "777.444.666-03", 0,"M", 850);
+    // addWorker(workers, pCountWorkers, "QUE SUSTO", "666.444.666-04", 0,"M", 890);
+    // addWorker(workers, pCountWorkers, "SANDRINHA", "222.333.666-38", 0,"F", 80000);
+    
+    displayAllWorkers(workers);
+
+    // deleteWorker(workers, "222.333.666-38"); // Excluir a Sandrinha
+
+    // Persiste em Disco (só de zoas)
+    // saveWorkersInHardDisk(workers);
+    
     // Aumentinho de leve pra Claudia
-    updateWorker(workers, countWorkers, "222.333.666-01" ,"CLAUDINHA", "222.333.666-01",0 ,"F", 3000);
-    displayAllWorkers(workers, countWorkers);
+    // updateWorker(workers, "222.333.666-01" ,"CLAUDINHA", "222.333.666-01",0 ,"F", 3000);
+
+    // Exibe de novo essa budega
+    displayAllWorkers(workers);
+
+    // Persiste em Disco (só de novo)
+    saveWorkersInHardDisk(workers);
 
     return 0;
 }
