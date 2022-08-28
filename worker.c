@@ -12,6 +12,18 @@
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
 #define LENGHT_WORKER 50
+int countWorkers = 0;
+int* pCountWorkers = &countWorkers;
+
+struct Worker {
+    int id;
+    char name[250];
+    char cpf[14];
+    int is_manager;
+    char gender[1];
+    float salary;
+    int is_deleted;
+} workers[LENGHT_WORKER];
 
 void clearScreen() {
     if (system("clear")) {
@@ -27,18 +39,12 @@ void fixAccentuation() {
     #endif    
 }
 
-struct Worker {
-    int id;
-    char name[250];
-    char cpf[14];
-    int is_manager;
-    char gender[1];
-    float salary;
-    int is_deleted;
-} workers[LENGHT_WORKER];
-
-void saveWorkersInHardDisk(struct Worker workers[]) {
-      struct stat st = {0};
+/**
+ * @brief GLOBAL variable workers will be persist on HardDisk in text file with pattern (.csv)
+ * @global worker
+ */
+void saveWorkersInHardDisk() {
+    struct stat st = {0};
     if (stat("storage", &st) == -1) {
         #ifdef linux
            mkdir("storage", 0700);
@@ -72,51 +78,50 @@ void saveWorkersInHardDisk(struct Worker workers[]) {
 }
 
 
+
 /**
- * Add a worker in struct of workers, if success, will return int(1)
+ * @brief Add a worker in struct of [GLOBAL] workers
  * 
- * @param allWorkers 
- * @param index 
  * @param workerName 
  * @param workerCpf 
  * @param workerIsManager 
  * @param workerGender 
  * @param workerSalary 
- * @return int 
  */
-int addWorker(struct Worker allWorkers[], int* countWorkers, char workerName[250], char workerCpf[14], int workerIsManager, char workerGender[1], float workerSalary) {
-    allWorkers[*countWorkers].id = *countWorkers + 1;
-    strcpy(allWorkers[*countWorkers].name, workerName);
-    strcpy(allWorkers[*countWorkers].cpf, workerCpf);
-    allWorkers[*countWorkers].is_manager = workerIsManager;
-    strcpy(allWorkers[*countWorkers].gender, workerGender);
-    allWorkers[*countWorkers].salary = workerSalary;
-    allWorkers[*countWorkers].is_deleted = 0;
-
-    *countWorkers = *countWorkers + 1;
-    return 1;
+void addWorker(
+        char workerName[250],
+        char workerCpf[14],
+        int workerIsManager,
+        char workerGender[1],
+        float workerSalary
+    ) {
+    workers[*pCountWorkers].id = *pCountWorkers + 1;
+    strcpy(workers[*pCountWorkers].name, workerName);
+    strcpy(workers[*pCountWorkers].cpf, workerCpf);
+    workers[*pCountWorkers].is_manager = workerIsManager;
+    strcpy(workers[*pCountWorkers].gender, workerGender);
+    workers[*pCountWorkers].salary = workerSalary;
+    workers[*pCountWorkers].is_deleted = 0;
+    *pCountWorkers = *pCountWorkers + 1;    
 }
 
 
 /**
- * Read from a file with csv format, and put in memory
- * Example of .csv => "1,A. CLAUDIA,222.333.666-38,F,0,2540.00"
+ * @brief Read from a file with csv format, and push in memory 
+ * Example of line with a valid worker .csv => "1,A. CLAUDIA,222.333.666-01,F,0,2540.00"
  * 
- * @param workers 
- * @return int 
  */
-void readWorkersFromHardDisk(struct Worker workers[], int* pCountWorkers) {
+void readWorkersFromHardDisk() {
     FILE *file = fopen(PATH_FILE, "r");
     char buf[400];
     int id;
     char name[250];
-    char anyVar[2]; // If remove this, will break Name... C-things....
+    char anyVar[2]; // If remove this, will break Name... C-things.... TODO: Tell-me Why?
     char cpf[14];
-    char anyVar2[2]; // If remove this, will break CPF... C-things....
+    char anyVar2[2]; // If remove this, will break CPF... C-things.... TODO: Tell-me Why?
     int is_manager;
     char gender[1];
     float salary;
-    const char fields[6] = ";";
     
     while(fgets(buf, sizeof(buf), file))
     {
@@ -153,10 +158,66 @@ void readWorkersFromHardDisk(struct Worker workers[], int* pCountWorkers) {
         // printf("Ismanager %i\n", is_manager);
         // printf("Salary: %f\n", salary);
         
-        addWorker(workers, pCountWorkers, name, cpf, is_manager, gender, salary);
+        addWorker(name, cpf, is_manager, gender, salary);
     }
-
     return;
+}
+
+/**
+ * @brief Pass a cpf as a string to delete them from struct Worker (Global Worker)
+ * 
+ * @global worker
+ * @param cpfWorkerToDelete 
+ * @return struct Worker 
+ */
+struct Worker deleteWorker(char *cpfWorkerToDelete) {
+    struct Worker workerTemp;
+
+    for (int i = 0; i < LENGHT_WORKER; i++) {
+        if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
+            workers[i].is_deleted = 1;
+            return workers[i];
+        }        
+    }    
+    return workerTemp;
+}
+
+/**
+ * @brief Pass a cpf as a string to update a worker from struct Worker (Global Worker)
+ * 
+ * @global worker
+ * @param allWorkers 
+ * @param cpfWorkerToUpdate 
+ * @param workerName 
+ * @param workerCpf 
+ * @param workerIsManager 
+ * @param workerGender 
+ * @param workerSalary 
+ * @return struct Worker 
+ */
+struct Worker updateWorker(
+    struct Worker allWorkers[],    
+    char *cpfWorkerToUpdate,
+    char workerName[250],
+    char workerCpf[14],
+    int workerIsManager,
+    char workerGender[1],
+    float workerSalary
+) {
+    struct Worker workerTemp;
+    for (int i = 0; i < LENGHT_WORKER; i++) {
+        if(strcmp(allWorkers[i].cpf, cpfWorkerToUpdate) == 0) {            
+            allWorkers[i].id = i + 1;
+            strcpy(allWorkers[i].name, workerName);
+            strcpy(allWorkers[i].cpf, workerCpf);
+            allWorkers[i].is_manager = workerIsManager;
+            strcpy(allWorkers[i].gender, workerGender);
+            allWorkers[i].salary = workerSalary;
+            allWorkers[i].is_deleted = 0;
+            return allWorkers[i];
+        }        
+    }
+    return workerTemp;
 }
 
 int displayWorker(struct Worker worker) {
@@ -167,47 +228,15 @@ int displayWorker(struct Worker worker) {
     return 1;
 }
 
-int deleteWorker(struct Worker workers[], char *cpfWorkerToDelete) {
-    for (int i = 0; i < LENGHT_WORKER; i++) {
-        if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
-            workers[i].is_deleted = 1;            
-        }        
-    }
-    return -1;
-}
-
-int updateWorker(
-    struct Worker allWorkers[],    
-    char *cpfWorkerToUpdate,
-    char workerName[250],
-    char workerCpf[14],
-    int workerIsManager,
-    char workerGender[1],
-    float workerSalary
-) {
-    for (int i = 0; i < LENGHT_WORKER; i++) {
-        if(strcmp(allWorkers[i].cpf, cpfWorkerToUpdate) == 0) {
-            // workers[i].is_deleted = 1;
-            allWorkers[i].id = i + 1;
-            strcpy(allWorkers[i].name, workerName);
-            strcpy(allWorkers[i].cpf, workerCpf);
-            allWorkers[i].is_manager = workerIsManager;
-            strcpy(allWorkers[i].gender, workerGender);
-            allWorkers[i].salary = workerSalary;
-            allWorkers[i].is_deleted = 0;
-            return 1;
-        }        
-    }
-}
-
-void displayAllWorkers(struct Worker workers[]) {
+/**
+ * @brief Display all workers using struct Worker workers 
+ * @global worker
+ */
+void displayAllWorkers() {
     printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
     printf("|MATRICULA\t |FUNCIONÁRIO(A)\t|CPF\t\t |GERENTE\t|SALÁRIO\t|\n");
     printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
     
-    // TODO: Não Rolou kkkcrying :hehe
-    // int lengthWorkers = sizeof(workers)/sizeof(workers[0]);      
-
     int validWorkers = 0;
     for (int i = 0; i < LENGHT_WORKER; i++) {
         validWorkers+= displayWorker(workers[i]);
@@ -217,17 +246,17 @@ void displayAllWorkers(struct Worker workers[]) {
 }
 
 
+
 /**
- * @brief 
- * Example:
+ * @brief Request I/O From KeyBoard from User
+ * Example of fast input (with space strategy):
  * Gabriel 222.333.666-31 0 M 4000 
  * 
- * @param pCountWorkers 
+ * @return struct Worker 
  */
-void requestAndSaveNewWorker(int* pCountWorkers)
+struct Worker requestInfoWorker()
 {
     struct Worker workerTemp;
-
     printf("Informe o %s do %s\n", "nome", "Funcionário:");  
     // Pega a variavel com espaço, Ex: "Gabriel Darezzo"
     // fgets(workerTemp.name, 250, stdin);
@@ -248,53 +277,93 @@ void requestAndSaveNewWorker(int* pCountWorkers)
     printf("Informe o %s do %s\n", "salário", "Funcionário:");    
     scanf("%f",&workerTemp.salary);
 
-    // Indiferente
-    // workerTemp.id = 1;
-    // workerTemp.is_deleted = 0;
+    workerTemp.id = 1;
+    workerTemp.is_deleted = 0;
+    
+    return workerTemp;
+}
 
-    addWorker(workers, pCountWorkers, workerTemp.name, workerTemp.cpf, workerTemp.is_manager,workerTemp.gender, workerTemp.salary);
-    saveWorkersInHardDisk(workers);
+void showWorkerMenu() {
+    // ver maneira de iniciar sempre vazio 
+    struct Worker workerTemp;
+    
+    while(1) {
+        // workerTemp = zeroData();
+        int choiseWorkerMenu = 0;
+        printf("1 - Cadastro novo funcionário\n");
+        printf("2 - Listar todos os funcionários\n");        
+        printf("3 - Atualizar um funcionário (Por CPF)\n");
+        printf("4 - Excluir um funcionários (Por CPF)\n");
+        printf("5 - Voltar ao Menu Principal\n");
+        printf("Escolha a opção acima: \n");
+        scanf("%d", &choiseWorkerMenu);
+
+        switch (choiseWorkerMenu) {
+            //Create
+            case 1:
+                clearScreen();
+                workerTemp = requestInfoWorker();
+                addWorker(workerTemp.name, workerTemp.cpf, workerTemp.is_manager,workerTemp.gender, workerTemp.salary);
+                saveWorkersInHardDisk();
+                printf("O Funcionário %s (%s) foi cadastrado com sucesso! \n", workerTemp.name, workerTemp.cpf);
+            break;
+
+            //Read (all)
+            case 2:
+                clearScreen();
+                displayAllWorkers();
+            break;
+
+            //Update 
+            case 3:
+                clearScreen();
+                displayAllWorkers();                
+                printf("Informe o cpf do Funcionário para editar\n");
+                char cpfTemp[14];
+                scanf("%s", &cpfTemp);
+                workerTemp = requestInfoWorker();
+                workerTemp = updateWorker(workers, cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
+                printf("O Funcionário %s (%s) foi atualizado com sucesso! \n", workerTemp.name, workerTemp.cpf);
+            break;
+
+            //Delete
+            case 4:
+                clearScreen();
+                displayAllWorkers();                
+                printf("Informe o cpf do Funcionário para exluir\n", "cpf");
+                scanf("%s",&workerTemp.cpf);
+                workerTemp = deleteWorker(workerTemp.cpf);
+                printf("O CPF: %s (%s) foi excluido com sucesso! \n", workerTemp.cpf, workerTemp.name);
+                saveWorkersInHardDisk();
+            break;
+
+            case 5:
+                clearScreen();
+                printf("Voltando ao Menu Principal\n");
+                return;
+            break;
+        
+            default:
+                clearScreen();
+                printf("Opção errada\n");
+            break;
+        }
+    }    
 }
 
 int main(void)
 {
     fixAccentuation();
     clearScreen();
-
-    int countWorkers = 0;
-    int* pCountWorkers = &countWorkers;
-
-
-    readWorkersFromHardDisk(workers, pCountWorkers);
+    readWorkersFromHardDisk();
     
-    // Massa de Dados. (Simulando Inputs manuais)    
-    // addWorker(workers, pCountWorkers, "A. CLAUDIA", "222.333.666-01", 0, "F", 2540);
-    // addWorker(workers, pCountWorkers, "DAGOBERTO", "444.555.666-02", 1, "M", 25000);
-    // addWorker(workers, pCountWorkers, "RODOLFO- UFA", "777.444.666-03", 0,"M", 850);
-    // addWorker(workers, pCountWorkers, "QUE SUSTO", "666.444.666-04", 0,"M", 890);
-    // addWorker(workers, pCountWorkers, "SANDRINHA", "222.333.666-38", 0,"F", 80000);
-    
-    //displayAllWorkers(workers);
-
-    // deleteWorker(workers, "222.333.666-38"); // Excluir a Sandrinha
-
-    // Persiste em Disco (só de zoas)
-    // saveWorkersInHardDisk(workers);
-    
-    // Aumentinho de leve pra Claudia
-    // updateWorker(workers, "222.333.666-01" ,"CLAUDINHA", "222.333.666-01",0 ,"F", 3000);
-
-    // Exibe de novo essa budega
-    // displayAllWorkers(workers);
-
-    // Persiste em Disco (só de novo)
-    // saveWorkersInHardDisk(workers);
-
-
-    
-    //requestAndSaveNewWorker(pCountWorkers);
-    displayAllWorkers(workers);
-
-
+    //// Examples of simulate inputs manual:    
+    // addWorker("A. CLAUDIA", "222.333.666-01", 0, "F", 2540);
+    // addWorker("DAGOBERTO", "444.555.666-02", 1, "M", 25000);
+    // addWorker("RODOLFO- UFA", "777.444.666-03", 0,"M", 850);
+    // addWorker("QUE SUSTO", "666.444.666-04", 0,"M", 890);
+    // addWorker("SANDRINHA", "222.333.666-38", 0,"F", 80000);
+    //displayAllWorkers();
+    showWorkerMenu();
     return 0;
 }
