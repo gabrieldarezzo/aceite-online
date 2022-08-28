@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+// Add to use in Dev-C++ (bug in MingW)
+#include <locale.h>
+
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
 #define LENGHT_WORKER 50
@@ -28,14 +31,6 @@ void clearScreen() {
     if (system("clear")) {
         system("cls");
     }
-}
-
-void fixAccentuation() {
-    #ifdef linux
-        //clear
-    #else
-        system("chcp 65001");
-    #endif    
 }
 
 /**
@@ -354,7 +349,19 @@ void showWorkerMenu() {
 }
 
 int main(int argc, char *argv[]) {
-    fixAccentuation();
+
+    #ifdef linux
+            
+    #else
+        if(argv[1] && strcmp(argv[1], "1") == 0) {
+            // call with argument, binary.exe 1
+            system("chcp 65001");
+        } else {
+            setlocale(LC_ALL, "Portuguese");
+        }
+    #endif  
+
+    
     clearScreen();
     readWorkersFromHardDisk();
     
@@ -366,5 +373,5 @@ int main(int argc, char *argv[]) {
     // addWorker("SANDRINHA", "222.333.666-38", 0,"F", 80000);
     // displayAllWorkers();
     showWorkerMenu();
-    return 0;
+    return EXIT_SUCCESS;
 }
