@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -56,8 +55,9 @@ void saveWorkersInHardDisk() {
     FILE *fpt;
     fpt = fopen(PATH_FILE, "w+");
     
-    // Need Header?
+    // Header
     fprintf(fpt,"id,name,cpf,gender,is_manager,salary\n");
+
     for (int i = 0; i < LENGHT_WORKER; i++) {
 
         if(workers[i].is_deleted || workers[i].id == 0) {
@@ -116,9 +116,9 @@ void readWorkersFromHardDisk() {
     char buf[400];
     int id;
     char name[250];
-    char anyVar[2]; // If remove this, will break Name... C-things.... TODO: Tell-me Why?
+    char anyVar[2]; // If remove this, will break Name... C-Stranger-things.... TODO: Tell-me Why?
     char cpf[14];
-    char anyVar2[2]; // If remove this, will break CPF... C-things.... TODO: Tell-me Why?
+    char anyVar2[2]; // If remove this, will break CPF... C-Stranger-things.... TODO: Tell-me Why?
     int is_manager;
     char gender[1];
     float salary;
@@ -129,7 +129,7 @@ void readWorkersFromHardDisk() {
         char *token;
         
         token = strtok(buf, separator);        
-        // Pula iteração do header 'id,name,cpf,gender,is_manager,salary'
+        // Jump line: 'id,name,cpf,gender,is_manager,salary'
         if(strcmp(token, "id") == 0) {
             continue;
         }
@@ -284,11 +284,9 @@ struct Worker requestInfoWorker()
 }
 
 void showWorkerMenu() {
-    // ver maneira de iniciar sempre vazio 
     struct Worker workerTemp;
     
     while(1) {
-        // workerTemp = zeroData();
         int choiseWorkerMenu = 0;
         printf("1 - Cadastro novo funcionário\n");
         printf("2 - Listar todos os funcionários\n");        
@@ -308,7 +306,7 @@ void showWorkerMenu() {
                 printf("O Funcionário %s (%s) foi cadastrado com sucesso! \n", workerTemp.name, workerTemp.cpf);
             break;
 
-            //Read (all)
+            //Read
             case 2:
                 clearScreen();
                 displayAllWorkers();
@@ -363,7 +361,7 @@ int main(void)
     // addWorker("RODOLFO- UFA", "777.444.666-03", 0,"M", 850);
     // addWorker("QUE SUSTO", "666.444.666-04", 0,"M", 890);
     // addWorker("SANDRINHA", "222.333.666-38", 0,"F", 80000);
-    //displayAllWorkers();
+    // displayAllWorkers();
     showWorkerMenu();
     return 0;
 }
