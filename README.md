@@ -7,27 +7,22 @@ Possibilitando o operador:
 - Listar custo mensal da empresa
 
 
-A brincaideora aqui usou alguns conceitos do C: 
+A brincadeira aqui usou alguns conceitos do C: 
+- Conditional / Loop 
 - Functions 
-- Pointers and Refferences
+- Structs 
+- Pointers and References
 - Correção de acentuação no Windows (setLocale is Sux!)
-- Structs 
-- I/O Files Persistir em (.csv) 
-- Structs 
+- I/O Files Persistir em (.csv)  
 
 
-https://docs.google.com/spreadsheets/d/1eMlOSFpCK09SJYl4bYadGosuIpcc6fSVmUAPV1VW3GI/edit?usp=sharing
-
-
-
-### Copilar e Executar ?!  
+### Copilar e Executar (local) ?!  
 Execute o comando
 ```shell
 gcc -o binary.exe worker.c && binary.exe
 ```
 
-
-### Copilar pra valer ?!
+### Copilar pra 'prod' ?!
 Execute o comando
 ```shell
 gcc -o binary.exe worker.c && dist/aceite-online.exe
@@ -47,7 +42,7 @@ Ou uma versão estatica: `docs/fluxo_drawio.xml`
 
 Planilha de dados (storage/workers.csv)
 https://docs.google.com/spreadsheets/d/1eMlOSFpCK09SJYl4bYadGosuIpcc6fSVmUAPV1VW3GI/edit?usp=sharing
-![Terminal](docs/workers_csv)    
+![Planilha de Dados (Workers.csv)](docs/workers_csv.png)    
 
 
 ## Dicas:
@@ -93,15 +88,6 @@ path_file: char[250]
 
 Topicos para estudar:  
 - Malloc: https://www.programiz.com/c-programming/c-structures-pointers
-- Retornar o indice em outro escopo, 
-Ex: Passei na função:
-```c
-void showWorkersInDisplay(struct Worker workers[]) {
-    lengthWorkers ?
-    // // int lengthWorkers = sizeof(workers)/sizeof(workers[0]);
-}
-
-```
 
 
 
