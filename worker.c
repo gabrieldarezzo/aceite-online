@@ -123,7 +123,11 @@ void readWorkersFromHardDisk(struct Worker workers[], int* pCountWorkers) {
         const char separator[1] = ",";
         char *token;
         
-        token = strtok(buf, separator);
+        token = strtok(buf, separator);        
+        // Pula iteração do header 'id,name,cpf,gender,is_manager,salary'
+        if(strcmp(token, "id") == 0) {
+            continue;
+        }
         id = (int) token;
 
         token = strtok(NULL, separator);        
@@ -155,11 +159,12 @@ void readWorkersFromHardDisk(struct Worker workers[], int* pCountWorkers) {
     return;
 }
 
-void displayWorker(struct Worker worker) {
+int displayWorker(struct Worker worker) {
     if(worker.is_deleted || worker.id == 0) {
-        return; 
+        return 0;
     }
     printf("|\t\t%d|\t%s\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, worker.name, worker.cpf, worker.is_manager, worker.salary);
+    return 1;
 }
 
 int deleteWorker(struct Worker workers[], char *cpfWorkerToDelete) {
@@ -202,10 +207,53 @@ void displayAllWorkers(struct Worker workers[]) {
     
     // TODO: Não Rolou kkkcrying :hehe
     // int lengthWorkers = sizeof(workers)/sizeof(workers[0]);      
+
+    int validWorkers = 0;
     for (int i = 0; i < LENGHT_WORKER; i++) {
-        displayWorker(workers[i]);
+        validWorkers+= displayWorker(workers[i]);
     }
     printf("+---------------+-----------------------+----------------+--------------+---------------+\n");
+    printf("Total de Trabalhadores: %d\n", validWorkers);
+}
+
+
+/**
+ * @brief 
+ * Example:
+ * Gabriel 222.333.666-31 0 M 4000 
+ * 
+ * @param pCountWorkers 
+ */
+void requestAndSaveNewWorker(int* pCountWorkers)
+{
+    struct Worker workerTemp;
+
+    printf("Informe o %s do %s\n", "nome", "Funcionário:");  
+    // Pega a variavel com espaço, Ex: "Gabriel Darezzo"
+    // fgets(workerTemp.name, 250, stdin);
+    // if ((strlen(workerTemp.name) > 0) && (workerTemp.name[strlen (workerTemp.name) - 1] == '\n')) {
+    //     workerTemp.name[strlen (workerTemp.name) - 1] = '\0';
+    // }
+    scanf("%s",&workerTemp.name);
+    
+    printf("Informe o %s do %s\n", "cpf", "Funcionário:");    
+    scanf("%s",&workerTemp.cpf);
+
+    printf("Informe se o %s é %s\n", "Funcionário", "gerente (0 | 1) :");
+    scanf("%i",&workerTemp.is_manager);
+
+    printf("Informe o %s do %s\n", "sexo", "Funcionário ('M' | 'F'):");    
+    scanf("%s",&workerTemp.gender);
+
+    printf("Informe o %s do %s\n", "salário", "Funcionário:");    
+    scanf("%f",&workerTemp.salary);
+
+    // Indiferente
+    // workerTemp.id = 1;
+    // workerTemp.is_deleted = 0;
+
+    addWorker(workers, pCountWorkers, workerTemp.name, workerTemp.cpf, workerTemp.is_manager,workerTemp.gender, workerTemp.salary);
+    saveWorkersInHardDisk(workers);
 }
 
 int main(void)
@@ -226,7 +274,7 @@ int main(void)
     // addWorker(workers, pCountWorkers, "QUE SUSTO", "666.444.666-04", 0,"M", 890);
     // addWorker(workers, pCountWorkers, "SANDRINHA", "222.333.666-38", 0,"F", 80000);
     
-    displayAllWorkers(workers);
+    //displayAllWorkers(workers);
 
     // deleteWorker(workers, "222.333.666-38"); // Excluir a Sandrinha
 
@@ -237,10 +285,16 @@ int main(void)
     // updateWorker(workers, "222.333.666-01" ,"CLAUDINHA", "222.333.666-01",0 ,"F", 3000);
 
     // Exibe de novo essa budega
-    displayAllWorkers(workers);
+    // displayAllWorkers(workers);
 
     // Persiste em Disco (só de novo)
-    saveWorkersInHardDisk(workers);
+    // saveWorkersInHardDisk(workers);
+
+
+    
+    //requestAndSaveNewWorker(pCountWorkers);
+    displayAllWorkers(workers);
+
 
     return 0;
 }
