@@ -87,8 +87,13 @@ path_file: char[250]
 
 
 
+```shell
+
 ```
-x86_64-w64-mingw32-g++ -o run exercicios/menu_simple.c
+
+Generate .exe inside of Linux/Mac
+```shell
+x86_64-w64-mingw32-g++ -o dist/aceite-online.exe exercicios/menu_simple.c
 ```
 
 Topicos para estudar:  

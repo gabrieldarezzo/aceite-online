@@ -20,9 +20,9 @@ int* pCountWorkers = &countWorkers;
 struct Worker {
     int id;
     char name[250];
-    char cpf[14];
+    char cpf[15];
     int is_manager;
-    char gender[1];
+    char gender[2];
     float salary;
     int is_deleted;
 } workers[LENGHT_WORKER];
@@ -117,17 +117,12 @@ void addWorker(
 void readWorkersFromHardDisk() {
     FILE *file = fopen(PATH_FILE, "r");
     char buf[400];
-    int id;
-    char name[250];
-    char anyVar[2]; // If remove this, will break Name... C-Stranger-things.... TODO: Tell-me Why?
-    char cpf[14];
-    char anyVar2[2]; // If remove this, will break CPF... C-Stranger-things.... TODO: Tell-me Why?
-    int is_manager;
-    char gender[1];
-    float salary;
+   
     
     while(fgets(buf, sizeof(buf), file))
     {
+        struct Worker workerTemp;
+
         const char separator[] = ",";
         char *token;
         
@@ -136,33 +131,23 @@ void readWorkersFromHardDisk() {
         if(strcmp(token, "id") == 0) {
             continue;
         }
-        id = atoi(token); 
-        // id = (int) token;
 
-        token = strtok(NULL, separator);        
-        strcpy(name, token);
-        
-        token = strtok(NULL, separator);        
-        strcpy(cpf, token);
-
-        token = strtok(NULL, separator);
-        strcpy(gender, token);
-
-        token = strtok(NULL, separator);
-        is_manager = atoi(token);
-
-        token = strtok(NULL, separator);
-        salary = atof(token);
+        workerTemp.id = atoi(token); 
+        strcpy(workerTemp.name, strtok(NULL, separator));
+        strcpy(workerTemp.cpf, strtok(NULL, separator));
+        strcpy(workerTemp.gender, strtok(NULL, separator));
+        workerTemp.is_manager = atoi(strtok(NULL, separator));
+        workerTemp.salary = atof(strtok(NULL, separator));
 
         // // Debug Helper        
-        // printf("ID: %s\n", id );
-        // printf("Name: %s\n", name );            
-        // printf("CPF: %s\n", cpf );
-        // printf("Gender: %s\n", gender );            
-        // printf("Ismanager %i\n", is_manager);
-        // printf("Salary: %f\n", salary);
+        printf("ID: %d\n", workerTemp.id );
+        printf("Name: %s\n", workerTemp.name );            
+        printf("CPF: %s\n", workerTemp.cpf );
+        printf("Gender: %s\n", workerTemp.gender );            
+        printf("Ismanager %i\n", workerTemp.is_manager);
+        printf("Salary: %f\n", workerTemp.salary);
         
-        addWorker(name, cpf, is_manager, gender, salary);
+        addWorker(workerTemp.name, workerTemp.cpf, workerTemp.is_manager, workerTemp.gender, workerTemp.salary);
     }
     return;
 }
