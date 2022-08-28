@@ -128,7 +128,7 @@ void readWorkersFromHardDisk() {
     
     while(fgets(buf, sizeof(buf), file))
     {
-        const char separator[1] = ",";
+        const char separator[] = ",";
         char *token;
         
         token = strtok(buf, separator);        
@@ -137,6 +137,7 @@ void readWorkersFromHardDisk() {
             continue;
         }
         id = atoi(token); 
+        // id = (int) token;
 
         token = strtok(NULL, separator);        
         strcpy(name, token);
@@ -369,8 +370,8 @@ int main(int argc, char *argv[]) {
     #endif  
 
     
-    clearScreen();
-    // readWorkersFromHardDisk();
+    clearScreen();    
+    readWorkersFromHardDisk();
     
     //// Examples of simulate inputs manual:    
     // addWorker("A. CLAUDIA", "222.333.666-01", 0, "F", 2540);

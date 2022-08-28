@@ -25,7 +25,7 @@ gcc -o binary worker.c && binary
 ### Copilar e Executar pra 'prod' ?!
 Execute o comando
 ```shell
-gcc -o dist/aceite-online.exe worker.c && dist\aceite-online.exe
+gcc -o dist/aceite-online.exe worker.c && dist\aceite-online.exe 1
 ```
 
 ![Terminal](docs/out_worker.png)    
