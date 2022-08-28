@@ -15,7 +15,6 @@
 #define PATH_FILE "storage/workers.csv"
 #define LENGHT_WORKER 50
 int countWorkers = 0;
-int* pCountWorkers = &countWorkers;
 
 struct Worker {
     int id;
@@ -98,14 +97,14 @@ void addWorker(
         char workerGender[1],
         float workerSalary
     ) {
-    workers[*pCountWorkers].id = *pCountWorkers + 1;
-    strcpy(workers[*pCountWorkers].name, workerName);
-    strcpy(workers[*pCountWorkers].cpf, workerCpf);
-    workers[*pCountWorkers].is_manager = workerIsManager;
-    strcpy(workers[*pCountWorkers].gender, workerGender);
-    workers[*pCountWorkers].salary = workerSalary;
-    workers[*pCountWorkers].is_deleted = 0;
-    *pCountWorkers = *pCountWorkers + 1;    
+    workers[countWorkers].id = countWorkers + 1;
+    strcpy(workers[countWorkers].name, workerName);
+    strcpy(workers[countWorkers].cpf, workerCpf);
+    workers[countWorkers].is_manager = workerIsManager;
+    strcpy(workers[countWorkers].gender, workerGender);
+    workers[countWorkers].salary = workerSalary;
+    workers[countWorkers].is_deleted = 0;
+    countWorkers = countWorkers + 1;    
 }
 
 
@@ -139,13 +138,13 @@ void readWorkersFromHardDisk() {
         workerTemp.is_manager = atoi(strtok(NULL, separator));
         workerTemp.salary = atof(strtok(NULL, separator));
 
-        // // Debug Helper        
-        printf("ID: %d\n", workerTemp.id );
-        printf("Name: %s\n", workerTemp.name );            
-        printf("CPF: %s\n", workerTemp.cpf );
-        printf("Gender: %s\n", workerTemp.gender );            
-        printf("Ismanager %i\n", workerTemp.is_manager);
-        printf("Salary: %f\n", workerTemp.salary);
+        // Debug Helper        
+        // printf("ID: %d\n", workerTemp.id );
+        // printf("Name: %s\n", workerTemp.name );            
+        // printf("CPF: %s\n", workerTemp.cpf );
+        // printf("Gender: %s\n", workerTemp.gender );            
+        // printf("Ismanager %i\n", workerTemp.is_manager);
+        // printf("Salary: %f\n", workerTemp.salary);
         
         addWorker(workerTemp.name, workerTemp.cpf, workerTemp.is_manager, workerTemp.gender, workerTemp.salary);
     }
