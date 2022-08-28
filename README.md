@@ -22,10 +22,10 @@ Execute o comando
 gcc -o binary.exe worker.c && binary.exe
 ```
 
-### Copilar pra 'prod' ?!
+### Copilar e Executar pra 'prod' ?!
 Execute o comando
 ```shell
-gcc -o binary.exe worker.c && dist/aceite-online.exe
+gcc -o dist/aceite-online.exe worker.c && dist\aceite-online.exe
 ```
 
 ![Terminal](docs/out_worker.png)    
@@ -88,6 +88,6 @@ path_file: char[250]
 
 Topicos para estudar:  
 - Malloc: https://www.programiz.com/c-programming/c-structures-pointers
-
+- https://opensource.com/article/19/5/how-write-good-c-main-function
 
 

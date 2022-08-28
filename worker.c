@@ -58,7 +58,8 @@ void saveWorkersInHardDisk() {
     // Header
     fprintf(fpt,"id,name,cpf,gender,is_manager,salary\n");
 
-    for (int i = 0; i < LENGHT_WORKER; i++) {
+    int i; // To Avoid C99 or C11 mode, lets make this....
+    for(i = 0; i < LENGHT_WORKER; i++) {
 
         if(workers[i].is_deleted || workers[i].id == 0) {
             continue; 
@@ -133,7 +134,7 @@ void readWorkersFromHardDisk() {
         if(strcmp(token, "id") == 0) {
             continue;
         }
-        id = (int) token;
+        id = atoi(token); 
 
         token = strtok(NULL, separator);        
         strcpy(name, token);
@@ -173,7 +174,8 @@ void readWorkersFromHardDisk() {
 struct Worker deleteWorker(char *cpfWorkerToDelete) {
     struct Worker workerTemp;
 
-    for (int i = 0; i < LENGHT_WORKER; i++) {
+    int i;
+    for(i = 0; i < LENGHT_WORKER; i++) {
         if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
             workers[i].is_deleted = 1;
             return workers[i];
@@ -205,7 +207,8 @@ struct Worker updateWorker(
     float workerSalary
 ) {
     struct Worker workerTemp;
-    for (int i = 0; i < LENGHT_WORKER; i++) {
+    int i;
+    for (i = 0; i < LENGHT_WORKER; i++) {
         if(strcmp(allWorkers[i].cpf, cpfWorkerToUpdate) == 0) {            
             allWorkers[i].id = i + 1;
             strcpy(allWorkers[i].name, workerName);
@@ -238,7 +241,8 @@ void displayAllWorkers() {
     printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
     
     int validWorkers = 0;
-    for (int i = 0; i < LENGHT_WORKER; i++) {
+    int i;
+    for (i = 0; i < LENGHT_WORKER; i++) {
         validWorkers+= displayWorker(workers[i]);
     }
     printf("+---------------+-----------------------+----------------+--------------+---------------+\n");
@@ -349,8 +353,7 @@ void showWorkerMenu() {
     }    
 }
 
-int main(void)
-{
+int main(int argc, char *argv[]) {
     fixAccentuation();
     clearScreen();
     readWorkersFromHardDisk();
