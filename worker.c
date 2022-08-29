@@ -14,6 +14,7 @@
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
 #define LENGHT_WORKER 50
+#define MAX_NAME_LENGTH_STRING 12
 int countWorkers = 0;
 
 struct Worker {
@@ -34,6 +35,23 @@ void clearScreen() {
     #else // Windows
         system("cls");
     #endif
+}
+
+
+/**
+ * @brief Return piece of string
+ * Example: cutString("ABCD", 2); // => AB
+ * 
+ * @param stringToCut 
+ * @param lengthToCut 
+ * @return const char* 
+ */
+const char* cutString(char *stringToCut, int lengthToCut) {
+    char *subtext = NULL;
+    subtext = (char*) malloc((lengthToCut+1)*sizeof(char));
+    memcpy(subtext, &stringToCut[0], lengthToCut);
+    subtext[lengthToCut] = '\0';
+    return subtext;
 }
 
 /**
@@ -214,7 +232,7 @@ int displayWorker(struct Worker worker) {
     if(worker.is_deleted || worker.id == 0) {
         return 0;
     }
-    printf("|\t\t%d|\t%s\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, worker.name, worker.cpf, worker.is_manager, worker.salary);
+    printf("|\t\t%d|%s\t\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, worker.is_manager, worker.salary);
     return 1;
 }
 
@@ -223,9 +241,9 @@ int displayWorker(struct Worker worker) {
  * @global worker
  */
 void displayAllWorkers() {
-    printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
+    printf("+----------------+----------------------+----------------+--------------+---------------+\n");
     printf("|MATRICULA\t |FUNCIONÁRIO(A)\t|CPF\t\t |GERENTE\t|SALÁRIO\t|\n");
-    printf("+----------------+----------------+-----+----------------+--------------+---------------+\n");
+    printf("+----------------+----------------------+----------------+--------------+---------------+\n");
     
     int validWorkers = 0;
     int i;
