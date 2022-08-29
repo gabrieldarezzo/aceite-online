@@ -356,6 +356,15 @@ void showWorkerMenu() {
     }    
 }
 
+void showIntro() {
+    printf("  ___              _  _                 _____         _  _              \n");
+    printf(" / _ \\            (_)| |               |  _  |       | |(_)             \n");
+    printf("/ /_\\ \\  ___  ___  _ | |_  ___  ______ | | | | _ __  | | _  _ __    ___ \n");
+    printf("|  _  | / __|/ _ \\| || __|/ _ \\|______|| | | || '_ \\ | || || '_ \\  / _ \\\n");
+    printf("| | | || (__|  __/| || |_|  __/        \\ \\_/ /| | | || || || | | ||  __/\n");
+    printf("\\_| |_/ \\___|\\___||_| \\__|\\___|         \\___/ |_| |_||_||_||_| |_| \\___|\n\n");
+}
+
 int main(int argc, char *argv[]) {
 
     #ifdef linux
@@ -380,6 +389,7 @@ int main(int argc, char *argv[]) {
     // addWorker("QUE SUSTO", "666.444.666-04", 0,"M", 890);
     // addWorker("SANDRINHA", "222.333.666-38", 0,"F", 80000);
     // displayAllWorkers();
+    showIntro();
     showWorkerMenu();
     return EXIT_SUCCESS;
 }
