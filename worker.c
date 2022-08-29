@@ -182,6 +182,7 @@ struct Worker deleteWorker(char *cpfWorkerToDelete) {
     int i;
     for(i = 0; i < LENGHT_WORKER; i++) {
         if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
+            countWorkers = countWorkers - 1;    
             workers[i].is_deleted = 1;
             return workers[i];
         }        
@@ -202,8 +203,7 @@ struct Worker deleteWorker(char *cpfWorkerToDelete) {
  * @param workerSalary 
  * @return struct Worker 
  */
-struct Worker updateWorker(
-    struct Worker allWorkers[],    
+struct Worker updateWorker(    
     char *cpfWorkerToUpdate,
     char workerName[250],
     char workerCpf[14],
@@ -214,26 +214,25 @@ struct Worker updateWorker(
     struct Worker workerTemp;
     int i;
     for (i = 0; i < LENGHT_WORKER; i++) {
-        if(strcmp(allWorkers[i].cpf, cpfWorkerToUpdate) == 0) {            
-            allWorkers[i].id = i + 1;
-            strcpy(allWorkers[i].name, workerName);
-            strcpy(allWorkers[i].cpf, workerCpf);
-            allWorkers[i].is_manager = workerIsManager;
-            strcpy(allWorkers[i].gender, workerGender);
-            allWorkers[i].salary = workerSalary;
-            allWorkers[i].is_deleted = 0;
-            return allWorkers[i];
+        if(strcmp(workers[i].cpf, cpfWorkerToUpdate) == 0) {            
+            workers[i].id = i + 1;
+            strcpy(workers[i].name, workerName);
+            strcpy(workers[i].cpf, workerCpf);
+            workers[i].is_manager = workerIsManager;
+            strcpy(workers[i].gender, workerGender);
+            workers[i].salary = workerSalary;
+            workers[i].is_deleted = 0;
+            return workers[i];
         }        
     }
     return workerTemp;
 }
 
-int displayWorker(struct Worker worker) {
+void displayWorker(struct Worker worker) {
     if(worker.is_deleted || worker.id == 0) {
-        return 0;
+        return;
     }
     printf("|\t\t%d|%s\t\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, worker.is_manager, worker.salary);
-    return 1;
 }
 
 /**
@@ -244,14 +243,12 @@ void displayAllWorkers() {
     printf("+----------------+----------------------+----------------+--------------+---------------+\n");
     printf("|MATRICULA\t |FUNCIONÁRIO(A)\t|CPF\t\t |GERENTE\t|SALÁRIO\t|\n");
     printf("+----------------+----------------------+----------------+--------------+---------------+\n");
-    
-    int validWorkers = 0;
     int i;
     for (i = 0; i < LENGHT_WORKER; i++) {
-        validWorkers+= displayWorker(workers[i]);
+        displayWorker(workers[i]);
     }
     printf("+---------------+-----------------------+----------------+--------------+---------------+\n");
-    printf("Total de Trabalhadores: %d\n", validWorkers);
+    printf("Total de Trabalhadores: %d\n", countWorkers);
 }
 
 
@@ -329,7 +326,8 @@ void showWorkerMenu() {
                 char cpfTemp[14];
                 scanf("%s", cpfTemp);
                 workerTemp = requestInfoWorker();
-                workerTemp = updateWorker(workers, cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
+                workerTemp = updateWorker(cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
+                saveWorkersInHardDisk();
                 printf("O Funcionário %s (%s) foi atualizado com sucesso! \n", workerTemp.name, workerTemp.cpf);
             break;
 
