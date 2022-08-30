@@ -13,8 +13,8 @@
 
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
-#define LENGHT_WORKER 50
-#define MAX_NAME_LENGTH_STRING 12
+#define LENGHT_WORKER 1000
+#define MAX_NAME_LENGTH_STRING 13
 int countWorkers = 0;
 
 struct Worker {
@@ -31,7 +31,7 @@ void clearScreen() {
     #ifdef __APPLE__
         system("clear");
     #elif linux
-        system("pwd");//TODO: Search after
+        system("clear");
     #else // Windows
         system("cls");
     #endif
@@ -65,10 +65,9 @@ void saveWorkersInHardDisk() {
             mkdir("storage", 0700);
         #elif linux
             mkdir("storage", 0700);
-        #else // Windows
+        #else
             mkdir("storage");
         #endif
-        
     }
 
     FILE *fpt;
@@ -193,8 +192,6 @@ struct Worker deleteWorker(char *cpfWorkerToDelete) {
 /**
  * @brief Pass a cpf as a string to update a worker from struct Worker (Global Worker)
  * 
- * @global worker
- * @param allWorkers 
  * @param cpfWorkerToUpdate 
  * @param workerName 
  * @param workerCpf 
@@ -228,11 +225,23 @@ struct Worker updateWorker(
     return workerTemp;
 }
 
+
+const char* isManager(int isManager) {
+    if(isManager != 0) {
+        return "FUNCIONÁRIO";
+    }
+    return "GERENTE";
+}
+
 void displayWorker(struct Worker worker) {
     if(worker.is_deleted || worker.id == 0) {
         return;
     }
-    printf("|\t\t%d|%s\t\t| %s |GERENTE: %i    |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, worker.is_manager, worker.salary);
+    if(strlen(worker.name) <= 5) {
+        printf("| %d\t\t| %s\t\t\t\t| %s | %s\t |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
+    } else {
+        printf("| %d\t\t| %s\t\t\t| %s | %s\t |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
+    }
 }
 
 /**
@@ -240,14 +249,14 @@ void displayWorker(struct Worker worker) {
  * @global worker
  */
 void displayAllWorkers() {
-    printf("+----------------+----------------------+----------------+--------------+---------------+\n");
-    printf("|MATRICULA\t |FUNCIONÁRIO(A)\t|CPF\t\t |GERENTE\t|SALÁRIO\t|\n");
-    printf("+----------------+----------------------+----------------+--------------+---------------+\n");
+    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
+    printf("| MATRICULA\t| FUNCIONÁRIO(A)\t\t| CPF\t\t| FUNÇÃO\t| SALÁRIO\t|\n");
+    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
     int i;
     for (i = 0; i < LENGHT_WORKER; i++) {
         displayWorker(workers[i]);
     }
-    printf("+---------------+-----------------------+----------------+--------------+---------------+\n");
+    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
     printf("Total de Trabalhadores: %d\n", countWorkers);
 }
 
