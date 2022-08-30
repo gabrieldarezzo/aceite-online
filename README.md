@@ -28,6 +28,12 @@ Execute o comando
 gcc -o dist/aceite-online.exe worker.c && dist\aceite-online.exe 1
 ```
 
+```shell
+gcc -Wall -Wshadow -Wconversion worker.c
+```
+-Wmissing-prototypes -Wstrict-prototypes => Estudar sobre ganhos de prototypes.
+
+
 ![Terminal](docs/out_worker.png)    
 
 

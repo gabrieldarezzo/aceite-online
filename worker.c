@@ -46,7 +46,7 @@ void clearScreen() {
  * @param lengthToCut 
  * @return const char* 
  */
-const char* cutString(char *stringToCut, int lengthToCut) {
+const char* cutString(char *stringToCut, unsigned lengthToCut) {
     char *subtext = NULL;
     subtext = (char*) malloc((lengthToCut+1)*sizeof(char));
     memcpy(subtext, &stringToCut[0], lengthToCut);
@@ -136,7 +136,7 @@ void readWorkersFromHardDisk() {
    
     
     while(fgets(buf, sizeof(buf), file))
-    {
+    {    
         struct Worker workerTemp;
 
         const char separator[] = ",";
@@ -154,7 +154,7 @@ void readWorkersFromHardDisk() {
         strcpy(workerTemp.gender, strtok(NULL, separator));
         workerTemp.is_manager = atoi(strtok(NULL, separator));
         workerTemp.salary = atof(strtok(NULL, separator));
-
+        
         // Debug Helper        
         // printf("ID: %d\n", workerTemp.id );
         // printf("Name: %s\n", workerTemp.name );            
