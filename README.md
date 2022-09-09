@@ -105,5 +105,16 @@ x86_64-w64-mingw32-g++ -o dist/aceite-online.exe exercicios/menu_simple.c
 Topicos para estudar:  
 - Malloc: https://www.programiz.com/c-programming/c-structures-pointers
 - https://opensource.com/article/19/5/how-write-good-c-main-function
+- https://pt.stackoverflow.com/questions/125793/qual-o-significado-do-operador-e-comercial-na-linguagem-c#:~:text=Portanto%2C%20conclui%2Dse%20que%20%26,de%20mem%C3%B3ria%20de%20uma%20vari%C3%A1vel.
+
+===
 
 
+Graphs:
+```shell
+gcc graph.c pbPlots.c supportLib.c -lm
+./a.out
+open graph.png
+```
+More examples:
+https://github.com/InductiveComputerScience/pbPlots/tree/master/C
