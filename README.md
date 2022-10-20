@@ -30,14 +30,29 @@ gcc -o dist/box-dados.exe worker.c && dist\box-dados.exe 1
 
 
 ### Executar modo Windows?
-Baixe o arquivo executável:
+Baixe o arquivo executável:  
 https://github.com/gabrieldarezzo/aceite-online/blob/main/dist/aceite-online.exe
  
 ![Abrir](docs/abrir_windows.png)    
 E clique 2x no arquivo `box-dados.exe`
 
 
+#### Acentuação do DevC++ 
+Problemas com acentuação ao Run/Compile via 'DevC++' ?
 
+Na função main altere:
+
+De:
+```c
+system("chcp 65001");
+// setlocale(LC_ALL, "Portuguese");
+```
+
+Para:
+```c
+// system("chcp 65001");
+setlocale(LC_ALL, "Portuguese");
+```
   
 ## Fluxograma
 

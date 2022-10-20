@@ -564,6 +564,7 @@ int main(int argc, char *argv[]) {
             system("chcp 65001");
         } else {
             system("chcp 65001");
+            // To generate .exe by command Line setlocale gonna bug
             // setlocale(LC_ALL, "Portuguese");
         }
     #endif  
