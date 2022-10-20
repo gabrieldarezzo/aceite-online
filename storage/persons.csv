@@ -1,4 +1,4 @@
-id,name,cpf,gender,is_manager,salary
+id,name,cpf,gender,person_type,salary
 1,GABRIEL,222.333.666-39,M,0,46000.00
 2,DANILO,222.333.666-50,M,1,450.99
 3,CAROL,222.333.666-52,F,1,12000.00
@@ -6,3 +6,5 @@ id,name,cpf,gender,is_manager,salary
 5,LUKAS,222.333.666-54,M,0,5700.00
 6,Gabriel,222.333.666-31,M,0,4000.00
 7,PaoDuro,222.333.666-33,M,3,0.00
+8,Gabriel,222.333.666-31,M,0,4000.00
+9,Darezzo,222.333.666-34,M,3,0.00
