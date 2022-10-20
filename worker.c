@@ -13,9 +13,14 @@
 
 // CONTANTS
 #define PATH_FILE "storage/workers.csv"
-#define LENGHT_WORKER 1000
+#define LENGHT_PERSONS 1000
 #define MAX_NAME_LENGTH_STRING 13
+
+#define PERSON_TYPE_WORKER 1
+#define PERSON_TYPE_COSTUMER 3
+
 int countWorkers = 0;
+int countCostumers = 0;
 
 struct Worker {
     int id;
@@ -25,7 +30,7 @@ struct Worker {
     char gender[2];
     float salary;
     int is_deleted;
-} workers[LENGHT_WORKER];
+} workers[LENGHT_PERSONS];
 
 void clearScreen() {
     #ifdef __APPLE__
@@ -77,7 +82,7 @@ void saveWorkersInHardDisk() {
     fprintf(fpt,"id,name,cpf,gender,is_manager,salary\n");
 
     int i; // To Avoid C99 or C11 mode, lets make this....
-    for(i = 0; i < LENGHT_WORKER; i++) {
+    for(i = 0; i < LENGHT_PERSONS; i++) {
 
         if(workers[i].is_deleted || workers[i].id == 0) {
             continue; 
@@ -121,7 +126,13 @@ void addWorker(
     strcpy(workers[countWorkers].gender, workerGender);
     workers[countWorkers].salary = workerSalary;
     workers[countWorkers].is_deleted = 0;
-    countWorkers = countWorkers + 1;    
+
+    if(workerIsManager == PERSON_TYPE_COSTUMER) {        
+        countCostumers = countCostumers + 1;
+    } else {
+        countWorkers = countWorkers + 1;
+    }
+
 }
 
 
@@ -130,7 +141,7 @@ void addWorker(
  * Example of line with a valid worker .csv => "1,A. CLAUDIA,222.333.666-01,F,0,2540.00"
  * 
  */
-void readWorkersFromHardDisk() {
+void readPersonsFromHardDisk() {
     FILE *file = fopen(PATH_FILE, "r");
     char buf[400];
    
@@ -179,7 +190,7 @@ struct Worker deleteWorker(char *cpfWorkerToDelete) {
     struct Worker workerTemp;
 
     int i;
-    for(i = 0; i < LENGHT_WORKER; i++) {
+    for(i = 0; i < LENGHT_PERSONS; i++) {
         if(strcmp(workers[i].cpf, cpfWorkerToDelete) == 0) {
             countWorkers = countWorkers - 1;    
             workers[i].is_deleted = 1;
@@ -210,7 +221,7 @@ struct Worker updateWorker(
 ) {
     struct Worker workerTemp;
     int i;
-    for (i = 0; i < LENGHT_WORKER; i++) {
+    for (i = 0; i < LENGHT_PERSONS; i++) {
         if(strcmp(workers[i].cpf, cpfWorkerToUpdate) == 0) {            
             workers[i].id = i + 1;
             strcpy(workers[i].name, workerName);
@@ -234,13 +245,27 @@ const char* isManager(int isManager) {
 }
 
 void displayWorker(struct Worker worker) {
-    if(worker.is_deleted || worker.id == 0) {
+    if(worker.is_deleted || worker.id == 0 || worker.is_manager == PERSON_TYPE_COSTUMER) {
         return;
     }
+        
     if(strlen(worker.name) <= 5) {
         printf("| %d\t\t| %s\t\t\t\t| %s | %s\t |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
     } else {
         printf("| %d\t\t| %s\t\t\t| %s | %s\t |R$ %.2f\t|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
+    }
+}
+
+
+void displayCostumer(struct Worker worker) {
+    if(worker.is_deleted || worker.id == 0 || worker.is_manager != PERSON_TYPE_COSTUMER) {
+        return;
+    }
+
+    if(strlen(worker.name) <= 5) {
+        printf("| %d\t\t| %s\t\t\t\t| %s|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
+    } else {
+        printf("| %d\t\t| %s\t\t\t| %s|\n", worker.id, cutString(worker.name, MAX_NAME_LENGTH_STRING), worker.cpf, isManager(worker.is_manager), worker.salary);
     }
 }
 
@@ -253,7 +278,7 @@ void displayAllWorkers() {
     printf("| MATRICULA\t| FUNCIONÁRIO(A)\t\t| CPF\t\t| FUNÇÃO\t| SALÁRIO\t|\n");
     printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
     int i;
-    for (i = 0; i < LENGHT_WORKER; i++) {
+    for (i = 0; i < LENGHT_PERSONS; i++) {
         displayWorker(workers[i]);
     }
     printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
@@ -261,18 +286,48 @@ void displayAllWorkers() {
 }
 
 
+/**
+ * @brief Display all costumers using struct Worker workers 
+ * @global worker
+ */
+void displayAllCostumers() {
+    printf("+---------------+-------------------------------+---------------+\n");
+    printf("| CADASTRO\t| NOME(A)\t\t\t| CPF\t\t|\n");
+    printf("+---------------+-------------------------------+---------------+\n");
+    int i;
+    for (i = 0; i < LENGHT_PERSONS; i++) {
+        displayCostumer(workers[i]);
+    }
+    printf("+---------------+-------------------------------+---------------+\n");
+    printf("Total de Clientes: %d\n", countCostumers);
+}
+
+
 
 /**
- * @brief Request I/O From KeyBoard from User
+ * @brief Request From I/O via KeyBoard a person, can be a Costumer or a Worker
  * Example of fast input (with space strategy):
- * Gabriel 222.333.666-31 0 M 4000 
+ * 
+ * Worker:
+ * Gabriel 222.333.666-31 0 M 4000
+ * 
+ * Costumer:
+ * Gabriel 222.333.666-33 M
  * 
  * @return struct Worker 
  */
-struct Worker requestInfoWorker()
+struct Worker requestInfoPerson(int typePerson)
 {
+    char aliasPerson[250];
+    
+    if(typePerson == PERSON_TYPE_COSTUMER) {        
+        strcpy(aliasPerson, "Cliente");        
+    } else {
+        strcpy(aliasPerson, "Funcionário");
+    }
+    
     struct Worker workerTemp;
-    printf("Informe o %s do %s\n", "nome", "Funcionário:");  
+    printf("Informe o %s do %s:\n", "nome", aliasPerson);  
     // Pega a variavel com espaço, Ex: "Gabriel Darezzo"
     // fgets(workerTemp.name, 250, stdin);
     // if ((strlen(workerTemp.name) > 0) && (workerTemp.name[strlen (workerTemp.name) - 1] == '\n')) {
@@ -280,17 +335,26 @@ struct Worker requestInfoWorker()
     // }
     scanf("%s",workerTemp.name);
     
-    printf("Informe o %s do %s\n", "cpf", "Funcionário:");    
+    printf("Informe o %s do %s:\n", "cpf", aliasPerson);    
     scanf("%s",workerTemp.cpf);
 
-    printf("Informe se o %s é %s\n", "Funcionário", "gerente (0 | 1) :");
-    scanf("%i",&workerTemp.is_manager);
 
-    printf("Informe o %s do %s\n", "sexo", "Funcionário ('M' | 'F'):");    
+    if(typePerson == 3) {
+        workerTemp.is_manager = 3;
+    } else {
+        printf("Informe se o %s é %s:\n", aliasPerson, "gerente (0 | 1)");
+        scanf("%i",&workerTemp.is_manager);
+    }
+
+    printf("Informe o %s do %s %s:\n", "sexo", aliasPerson, "('M' | 'F')");    
     scanf("%s",workerTemp.gender);
-
-    printf("Informe o %s do %s\n", "salário", "Funcionário:");    
-    scanf("%f",&workerTemp.salary);
+    
+    if(typePerson == 3) {        
+        workerTemp.salary = 0;
+    } else {
+        printf("Informe o %s do %s:\n", "salário", aliasPerson);    
+        scanf("%f",&workerTemp.salary);
+    }
 
     workerTemp.id = 1;
     workerTemp.is_deleted = 0;
@@ -315,7 +379,7 @@ void showWorkerMenu() {
             //Create
             case 1:
                 clearScreen();
-                workerTemp = requestInfoWorker();
+                workerTemp = requestInfoPerson(PERSON_TYPE_WORKER);
                 addWorker(workerTemp.name, workerTemp.cpf, workerTemp.is_manager,workerTemp.gender, workerTemp.salary);
                 saveWorkersInHardDisk();
                 printf("O Funcionário %s (%s) foi cadastrado com sucesso! \n", workerTemp.name, workerTemp.cpf);
@@ -324,7 +388,7 @@ void showWorkerMenu() {
             //Read
             case 2:
                 clearScreen();
-                displayAllWorkers();
+                displayAllWorkers(PERSON_TYPE_WORKER);
             break;
 
             //Update 
@@ -334,7 +398,7 @@ void showWorkerMenu() {
                 printf("Informe o cpf do Funcionário para editar\n");
                 char cpfTemp[14];
                 scanf("%s", cpfTemp);
-                workerTemp = requestInfoWorker();
+                workerTemp = requestInfoPerson(PERSON_TYPE_WORKER);
                 workerTemp = updateWorker(cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
                 saveWorkersInHardDisk();
                 printf("O Funcionário %s (%s) foi atualizado com sucesso! \n", workerTemp.name, workerTemp.cpf);
@@ -365,13 +429,122 @@ void showWorkerMenu() {
     }    
 }
 
+void showCostumerMenu() {
+    struct Worker workerTemp;
+    
+    while(1) {
+        int choiseWorkerMenu = 0;
+        printf("1 - Cadastro novo cliente\n");
+        printf("2 - Listar todos os cliente\n");        
+        printf("3 - Atualizar um cliente (Por CPF)\n");
+        printf("4 - Excluir um cliente (Por CPF)\n");
+        printf("5 - Voltar ao Menu Principal\n");
+        printf("Escolha a opção acima: \n");
+        scanf("%d", &choiseWorkerMenu);
+
+        switch (choiseWorkerMenu) {
+            //Create
+            case 1:
+                clearScreen();
+                workerTemp = requestInfoPerson(PERSON_TYPE_COSTUMER);
+                addWorker(workerTemp.name, workerTemp.cpf, workerTemp.is_manager,workerTemp.gender, workerTemp.salary);
+                saveWorkersInHardDisk();
+                printf("O Cliente %s (%s) foi cadastrado com sucesso! \n", workerTemp.name, workerTemp.cpf);
+            break;
+
+            //Read
+            case 2:
+                clearScreen();
+                displayAllCostumers();
+            break;
+
+            //Update 
+            case 3:
+                // clearScreen();
+                // displayAllWorkers();                
+                // printf("Informe o cpf do Funcionário para editar\n");
+                // char cpfTemp[14];
+                // scanf("%s", cpfTemp);
+                // workerTemp = requestInfoPerson();
+                // workerTemp = updateWorker(cpfTemp, workerTemp.name, workerTemp.cpf, workerTemp.is_manager ,workerTemp.gender, workerTemp.salary);
+                // saveWorkersInHardDisk();
+                // printf("O Funcionário %s (%s) foi atualizado com sucesso! \n", workerTemp.name, workerTemp.cpf);
+            break;
+
+            //Delete
+            case 4:
+                // clearScreen();
+                // displayAllWorkers();                
+                // printf("Informe o cpf do Funcionário para exluir\n");
+                // scanf("%s",workerTemp.cpf);
+                // workerTemp = deleteWorker(workerTemp.cpf);
+                // printf("O CPF: %s (%s) foi excluido com sucesso! \n", workerTemp.cpf, workerTemp.name);
+                // saveWorkersInHardDisk();
+            break;
+
+            case 5:
+                clearScreen();
+                printf("Voltando ao Menu Principal\n");
+                return;
+            break;
+        
+            default:
+                clearScreen();
+                printf("Opção errada\n");
+            break;
+        }
+    }    
+}
+
+
+void showIntroMenu() {
+    struct Worker workerTemp;
+    
+    while(1) {
+        int choiseWorkerMenu = 0;
+        printf("1 - Listar menu de Funcionários\n");
+        printf("2 - Listar menu do Cliente\n");                
+        printf("3 - Tela de Relatório\n");
+        
+        printf("Escolha a opção de menu acima: (1, 2, 3)\n");
+        scanf("%d", &choiseWorkerMenu);
+
+        switch (choiseWorkerMenu) {
+            case 1:
+                clearScreen();
+                showWorkerMenu();                
+            break;
+
+            case 2:
+                clearScreen();
+                showCostumerMenu();                
+            break;
+
+            case 3:
+                // TODO: Falta Fazer
+                return;
+            break;
+        
+            default:
+                clearScreen();
+                printf("Opção errada\n");
+            break;
+        }
+    }    
+}
+
+
 void showIntro() {
-    printf("  ___              _  _                 _____         _  _              \n");
-    printf(" / _ \\            (_)| |               |  _  |       | |(_)             \n");
-    printf("/ /_\\ \\  ___  ___  _ | |_  ___  ______ | | | | _ __  | | _  _ __    ___ \n");
-    printf("|  _  | / __|/ _ \\| || __|/ _ \\|______|| | | || '_ \\ | || || '_ \\  / _ \\\n");
-    printf("| | | || (__|  __/| || |_|  __/        \\ \\_/ /| | | || || || | | ||  __/\n");
-    printf("\\_| |_/ \\___|\\___||_| \\__|\\___|         \\___/ |_| |_||_||_||_| |_| \\___|\n\n");
+    printf("\\\\            //\n");
+    printf(" \\\\          // \n");
+    printf("  \\\\________//\n");
+    printf("   |        |\n");
+    printf("   |  BOX   |\n");
+    printf("   |  DADOS |\n");
+    printf("   |________|\n");
+    printf("\n");
+    printf("\n");
+    printf("Seus dados, seguros!\n\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -389,7 +562,7 @@ int main(int argc, char *argv[]) {
 
     
     clearScreen();    
-    readWorkersFromHardDisk();
+    readPersonsFromHardDisk();
     
     //// Examples of simulate inputs manual:    
     // addWorker("A. CLAUDIA", "222.333.666-01", 0, "F", 2540);
@@ -399,6 +572,7 @@ int main(int argc, char *argv[]) {
     // addWorker("SANDRINHA", "222.333.666-38", 0,"F", 80000);
     // displayAllWorkers();
     showIntro();
-    showWorkerMenu();
+    showIntroMenu();
+    
     return EXIT_SUCCESS;
 }
