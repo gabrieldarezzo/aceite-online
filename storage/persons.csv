@@ -8,3 +8,5 @@ id,name,cpf,gender,person_type,salary
 7,PaoDuro,222.333.666-33,M,3,0.00
 8,Gabriel,222.333.666-31,M,0,4000.00
 9,Darezzo,222.333.666-34,M,3,0.00
+10,Roberty,222.333.666-88,M,1,4000.00
+11,Verinhao,222.333.666-70,F,1,1280.80

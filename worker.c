@@ -184,7 +184,7 @@ void readPersonsFromHardDisk() {
 /**
  * @brief Pass a cpf as a string to delete them from struct Person (Global Person)
  * 
- * @global worker
+ * @global persons
  * @param cpfPersonToDelete 
  * @return struct Person 
  */
@@ -247,10 +247,10 @@ struct Person updateWorker(
 
 
 const char* isManager(int personType) {
-    if(personType != 0) {
-        return "FUNCIONÁRIO";
+    if(personType == 1) {
+        return "GERENTE";        
     }
-    return "GERENTE";
+    return "FUNCIONÁRIO";
 }
 
 void displayWorker(struct Person person) {
@@ -344,24 +344,24 @@ struct Person requestInfoPerson(int typePerson)
     // }
     scanf("%s",personTemp.name);
     
-    printf("Informe o %s do %s:\n", "cpf", aliasPerson);    
+    printf("Informe o cpf do %s (%s) com pontuação do (Ex: 222.333.666-33):\n", aliasPerson, personTemp.name);
     scanf("%s",personTemp.cpf);
 
 
-    if(typePerson == 3) {
-        personTemp.person_type = 3;
+    if(typePerson == PERSON_TYPE_COSTUMER) {
+        personTemp.person_type = PERSON_TYPE_COSTUMER;
     } else {
-        printf("Informe se o %s é %s:\n", aliasPerson, "gerente (0 | 1)");
+        printf("Informe se '%s' é GERENTE, (Ex: '1' = GERENTE | '0' = FUNCIONÁRIO):\n", personTemp.name);
         scanf("%i",&personTemp.person_type);
     }
 
-    printf("Informe o %s do %s %s:\n", "sexo", aliasPerson, "('M' | 'F')");    
+    printf("Informe o %s: (%s) do %s (Ex: 'M' = Masculino | 'F' = Feminino):\n", "sexo", aliasPerson, personTemp.name);    
     scanf("%s",personTemp.gender);
     
-    if(typePerson == 3) {        
+    if(typePerson == PERSON_TYPE_COSTUMER) {        
         personTemp.salary = 0;
     } else {
-        printf("Informe o %s do %s:\n", "salário", aliasPerson);    
+        printf("Informe o salário do (%s)  (Apenas os números, Ex: Para informar 'R$ 1.280,78' preencha dessa forma: '1280.78'):\n", personTemp.name);    
         scanf("%f",&personTemp.salary);
     }
 
@@ -563,7 +563,8 @@ int main(int argc, char *argv[]) {
             // call with argument, binary.exe 1
             system("chcp 65001");
         } else {
-            setlocale(LC_ALL, "Portuguese");
+            system("chcp 65001");
+            // setlocale(LC_ALL, "Portuguese");
         }
     #endif  
 
