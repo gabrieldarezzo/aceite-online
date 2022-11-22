@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 // Add to use in Dev-C++ (bug in MingW)
-#include <locale.h>
+// #include <locale.h>
 
 // CONTANTS
 #define PATH_FILE "storage/persons.csv"
