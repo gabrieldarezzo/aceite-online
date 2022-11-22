@@ -259,9 +259,20 @@ void displayWorker(struct Person person) {
     }
         
     if(strlen(person.name) <= 5) {
-        printf("| %d\t\t| %s\t\t\t\t| %s | %s\t |R$ %.2f\t|\n", person.id, cutString(person.name, MAX_NAME_LENGTH_STRING), person.cpf, isManager(person.person_type), person.salary);
+        printf("| %d\t\t| %s\t\t\t\t| %s | %s\t |R$ %.2f\t |\n", 
+            person.id, 
+            cutString(person.name, MAX_NAME_LENGTH_STRING), 
+            person.cpf, 
+            isManager(person.person_type),
+            person.salary
+        );
     } else {
-        printf("| %d\t\t| %s\t\t\t| %s | %s\t |R$ %.2f\t|\n", person.id, cutString(person.name, MAX_NAME_LENGTH_STRING), person.cpf, isManager(person.person_type), person.salary);
+        printf("| %d\t\t| %s\t\t\t| %s | %s\t |R$ %.2f\t |\n", 
+            person.id, cutString(person.name, MAX_NAME_LENGTH_STRING), 
+            person.cpf,
+            isManager(person.person_type), 
+            person.salary
+        );
     }
 }
 
@@ -283,15 +294,57 @@ void displayCostumer(struct Person person) {
  * @global persons
  */
 void displayAllWorkers() {
-    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
-    printf("| MATRICULA\t| FUNCIONÁRIO(A)\t\t| CPF\t\t| FUNÇÃO\t| SALÁRIO\t|\n");
-    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
+    printf("+---------------+-------------------------------+----------------+---------------+---------------+\n");
+    printf("| MATRICULA\t| FUNCIONÁRIO(A)\t\t| CPF\t\t | FUNÇÃO\t | SALÁRIO\t |\n");
+    printf("+---------------+-------------------------------+----------------+---------------+---------------+\n");
     int i;
     for (i = 0; i < LENGHT_PERSONS; i++) {
         displayWorker(persons[i]);
     }
+    printf("+---------------+-------------------------------+----------------+---------------+---------------+\n");
+    printf("Total de trabalhadores: %d\n", countWorkers);
+}
+
+/**
+ * @brief Display sum of all salary workers using struct Person persons 
+ * @global persons
+ */
+void displaySumSalaryWorkers() {
     printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
-    printf("Total de Trabalhadores: %d\n", countWorkers);
+    printf("| FUNCIONÁRIO(A)\t\t| CPF\t\t| FUNÇÃO\t| SALÁRIO\t| SUBTOTAL\t|\n");
+    printf("+---------------+-------------------------------+---------------+---------------+---------------+\n");
+    int i;
+    float sumSalary = 0;
+
+    for (i = 0; i < LENGHT_PERSONS; i++) {
+        if(persons[i].is_deleted || persons[i].id == 0 || persons[i].person_type == PERSON_TYPE_COSTUMER) {
+            continue;
+        }
+
+        sumSalary = sumSalary + persons[i].salary;
+        if(strlen(persons[i].name) <= 5) {
+            printf("| %s\t\t\t\t| %s| %s\t|R$ %.2f\t|R$ %.2f\t|\n", 
+                cutString(persons[i].name, MAX_NAME_LENGTH_STRING),
+                persons[i].cpf,
+                isManager(persons[i].person_type),
+                persons[i].salary,
+                sumSalary
+            );
+        } else {
+            printf("| %s\t\t\t| %s| %s\t|R$ %.2f\t|R$ %.2f\t|\n", 
+                cutString(persons[i].name, MAX_NAME_LENGTH_STRING), 
+                persons[i].cpf, 
+                isManager(persons[i].person_type), 
+                persons[i].salary,
+                sumSalary
+            );
+        }
+    
+    }
+    printf("+-------------------------------+---------------+---------------+---------------+---------------+\n");
+    printf("| ================ TOTAL DA SOMA DO SALÁRIO DOS TRABALHADORES ================ \t|R$ %.2f\t|\n", sumSalary);
+    printf("+-------------------------------+---------------+---------------+---------------+---------------+\n\n");
+    printf("Total de trabalhadores: %d\n", countWorkers);
 }
 
 
@@ -336,13 +389,16 @@ struct Person requestInfoPerson(int typePerson)
     }
     
     struct Person personTemp;
-    printf("Informe o %s do %s:\n", "nome", aliasPerson);  
-    // Pega a variavel com espaço, Ex: "Gabriel Darezzo"
+    printf("Informe o nome do %s (Sem espaço):\n", aliasPerson);
+    scanf("%s",personTemp.name);
+
+    // printf("Informe o nome do %s:\n", aliasPerson);
+    // // Pega a variavel com espaço, Ex: "Gabriel Darezzo"
     // fgets(personTemp.name, 250, stdin);
     // if ((strlen(personTemp.name) > 0) && (personTemp.name[strlen (personTemp.name) - 1] == '\n')) {
     //     personTemp.name[strlen (personTemp.name) - 1] = '\0';
     // }
-    scanf("%s",personTemp.name);
+
     
     printf("Informe o cpf do %s (%s) com pontuação do (Ex: 222.333.666-33):\n", aliasPerson, personTemp.name);
     scanf("%s",personTemp.cpf);
@@ -511,7 +567,7 @@ void showIntroMenu() {
         int choiseWorkerMenu = 0;
         printf("1 - Listar menu de Funcionários\n");
         printf("2 - Listar menu do Cliente\n");                
-        printf("3 - Exibir Relatório\n");
+        printf("3 - Exibir Relatório (Soma dos salários)\n");
         
         printf("Escolha a opção de menu acima: (1, 2, 3)\n");
         scanf("%d", &choiseWorkerMenu);
@@ -528,8 +584,8 @@ void showIntroMenu() {
             break;
 
             case 3:
-                // TODO: Implement sum of salary?
-                return;
+                clearScreen();
+                displaySumSalaryWorkers();
             break;
         
             default:

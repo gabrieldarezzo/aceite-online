@@ -25,7 +25,8 @@ gcc -o binary worker.c && binary
 ### Copilar e Executar no Windows via terminal ?!
 Execute o comando
 ```shell
-gcc -o dist/box-dados.exe worker.c && dist\box-dados.exe 1
+gcc -o dist/box-dados.exe worker.c
+dist\box-dados.exe
 ```
 
 
